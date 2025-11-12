@@ -18,28 +18,46 @@ class PD_guijiliudong_vision_v1:
     
     @classmethod
     def INPUT_TYPES(cls):
-        # VLM模型列表
+        # VLM模型列表（支持双图对比的模型）
         vlm_models = [
-            "Qwen/Qwen2.5-VL-32B-Instruct", 
-            "Qwen/Qwen2.5-VL-72B-Instruct", 
-            "Qwen/QVQ-72B-Preview",
-            "Qwen/Qwen2-VL-72B-Instruct",
-            "Pro/Qwen/Qwen2-VL-7B-Instruct",
-            "Pro/Qwen/Qwen2.5-VL-7B-Instruct",
-            "deepseek-ai/deepseek-vl2"
+            # Qwen3 系列（最新，推荐）
+            "Qwen/Qwen3-VL-32B-Instruct",  # 推荐：平衡性能和速度
+            "Qwen/Qwen3-VL-8B-Instruct",  # 快速版本
+            "Qwen/Qwen3-VL-235B-A22B-Instruct",  # 高性能版本
+            "Qwen/Qwen3-VL-30B-A3B-Instruct",  # 中等性能
+            "Qwen/Qwen3-VL-8B-Thinking",  # 推理增强
+            "Qwen/Qwen3-VL-32B-Thinking",  # 推理增强
+            "Qwen/Qwen3-VL-30B-A3B-Thinking",  # 推理增强
+            "Qwen/Qwen3-VL-235B-A22B-Thinking",  # 推理增强
+            # Qwen2.5 系列（稳定可靠）
+            "Qwen/Qwen2.5-VL-32B-Instruct",  # 稳定版本
+            "Qwen/Qwen2.5-VL-72B-Instruct",  # 高性能
+            "Pro/Qwen/Qwen2.5-VL-7B-Instruct",  # 快速版
+            "Qwen/Qwen2.5-VL-7B-Instruct",
+            # Qwen2 系列
+            "Qwen/Qwen2-VL-72B-Instruct",  # 经典版本
+            "Pro/Qwen/Qwen2-VL-7B-Instruct",  # 快速版
+            "Qwen/QVQ-72B-Preview",  # 推理增强版
+            # GLM 系列（智谱清言）
+            "zai-org/GLM-4.5V",  # 推荐：GLM视觉模型
+            "Pro/THUDM/GLM-4.5V-8B-Vision-Thinking",  # 推理增强
+            "THUDM/GLM-4.1V-9B-Thinking",  # 推理增强
+            # DeepSeek 系列
+            "deepseek-ai/deepseek-vl2",  # 识别准确
         ]
         
         return {
             "required": {
                 "image1": ("IMAGE",),
                 "image2": ("IMAGE",),
-                "model": (vlm_models, {"default": "Qwen/Qwen2.5-VL-72B-Instruct"}),
+                "model": (vlm_models, {"default": "Qwen/Qwen3-VL-32B-Instruct"}),
                 "prompt": ("STRING", {
                     "default": "请详细对比分析这两张图片的异同点，包括内容、构图、色彩、风格等方面的差异和相似之处。",
                     "multiline": True
                 }),
             },
             "optional": {
+                "api_key": ("STRING", {"default": "", "multiline": False}),
                 "detail": (["high", "low", "auto"], {"default": "high"}),
                 "temperature": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 2.0, "step": 0.1}),
                 "max_tokens": ("INT", {"default": 2048, "min": 1, "max": 4096}),
@@ -246,12 +264,15 @@ class PD_guijiliudong_vision_v1:
         
         raise Exception("所有网络配置尝试都失败了")
     
-    def analyze_images(self, image1, image2, model, prompt, detail="high", temperature=0.7, max_tokens=2048):
+    def analyze_images(self, image1, image2, model, prompt, api_key="", detail="high", temperature=0.7, max_tokens=2048):
         """分析两张图片"""
         
         try:
-            # 从配置文件加载API密钥
-            api_key = self.load_config()
+            # 优先使用传入的API密钥，如果没有则从配置文件加载
+            if not api_key or api_key.strip() == "":
+                api_key = self.load_config()
+            else:
+                api_key = api_key.strip()
             
             # 转换图像为base64
             print("正在处理图片...")
@@ -318,7 +339,7 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "PD_guijiliudong_vision_v1": "PD_guijiliudong_vision_v1"
+    "PD_guijiliudong_vision_v1": "PD_guijiliudong VLM 2image_V1"
 }
 
 # 导出节点类
