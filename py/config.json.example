@@ -1,0 +1,5 @@
+{
+  "api_key": "",
+  "base_url": "https://api.siliconflow.cn/v1",
+  "备注": "如果使用自定义API地址，请修改base_url字段"
+}
