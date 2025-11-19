@@ -37,7 +37,10 @@
         }
         ```
     *   如果没有 API Key，请前往 [硅基流动官网](https://siliconflow.cn) 注册申请。
-    邀请码：https://cloud.siliconflow.cn/i/8C2qIGwR 登录时候输入：8C2qIGwR  
+  
+ -  邀请码：https://cloud.siliconflow.cn/i/8C2qIGwR 
+ -  登录时候输入：8C2qIGwR  
+
     ---
       git remote add origin https://github.com/7BEII/comfyui_PD_guijiliudong.git 
 
